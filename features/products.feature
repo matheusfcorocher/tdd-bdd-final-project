@@ -54,3 +54,25 @@ Scenario: Read a Product
     And I should see "True" in the "Available" dropdown
     And I should see "Cloths" in the "Category" dropdown
     And I should see "59.95" in the "Price" field
+
+Scenario: Update a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "Sheets"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Full bed sheets" in the "Description" field
+    When I set the "Description" to "testing"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "testing" in the "Description" field
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "testing" in the results
+    And I should not see "Full bed sheets" in the results
+    
