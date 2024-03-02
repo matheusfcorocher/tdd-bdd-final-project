@@ -132,3 +132,20 @@ def step_impl(context, element_name, text_string):
     )
     element.clear()
     element.send_keys(text_string)
+
+@when('I press the "{button}" button')
+def step_impl(context, button):
+    button_id = button.lower() + "-btn"
+    found_button = context.driver.find_element_by_id(button_id)
+    found_button.click()
+
+@then('I should see the message "{message}"')
+def step_impl(context, message):
+    found = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, "flash_message"),
+            message
+        )
+    )
+    assert(found)
+
