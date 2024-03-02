@@ -268,7 +268,7 @@ class TestProductRoutes(TestCase):
         self.assertEqual(new_count, product_count - 1)
 
     # ----------------------------------------------------------
-    # TEST LIST ALL
+    # TEST LIST
     # ----------------------------------------------------------
 
     def test_get_product_list(self):
@@ -282,10 +282,6 @@ class TestProductRoutes(TestCase):
         data = response.get_json()
         # assert that the len() of the data is 5 (the number of products you created)
         self.assertEqual(len(data), 5)
-
-    # ----------------------------------------------------------
-    # TEST LIST BY NAME
-    # ----------------------------------------------------------
 
     def test_query_by_name(self):
         """It should Query Products by name"""
@@ -328,6 +324,27 @@ class TestProductRoutes(TestCase):
         # use a for loop to check each product in the data list and verify that all returned products belong to the queried category
         for product in data:
             self.assertEqual(product['category'], category.name)
+
+    def test_query_by_availability(self):
+        """It should Query Products by availability"""
+        products = self._create_products(10)
+        # list named available_products is initialized to store the products based on their availability status
+        available_products = [product for product in products if product.available == True]
+        # store the  count of available products.
+        count_available_products = len(available_products)
+        # Log a debug message indicating the count and details of the available products
+        logging.debug("Available Products [%d] %s", count_available_products, available_products)
+        # send an HTTP GET request to the URL specified by the BASE_URL variable, along with a query parameter "available" set to true.
+        response = self.client.get(BASE_URL, query_string="available=true")
+        # assert that response status code is 200, indicating a successful request (HTTP 200 OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # retrieve the JSON data from the response
+        data = response.get_json()
+        # assert that the length of the data list (i.e., the number of products returned in the response) is equal to available_count
+        self.assertEqual(len(data), count_available_products)
+        # use a for loop to check each product in the data list and verify that the "available" attribute of each product is set to True
+        for product in data:
+            self.assertEqual(product['available'], True)
 
     ######################################################################
     # Utility functions
