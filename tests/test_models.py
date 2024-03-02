@@ -266,3 +266,39 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(found.count(), count)
         for product in found:
             self.assertEqual(product.price, price)
+
+    def test_deserialize(self):
+        """It should deserialize a product from a dictionary"""
+        product = ProductFactory()
+        data = product.serialize()
+        copied_product = Product().deserialize(data)
+        self.assertEqual(product.name, copied_product.name)
+        self.assertEqual(product.description, copied_product.description)
+        self.assertEqual(product.price, copied_product.price)
+        self.assertEqual(product.available, copied_product.available)
+
+    def test_deserialize_with_invalid_type_for_available(self):
+        """It should return Invalid type error when deserialize a product from a dictionary with available isnt boolean"""
+        product = ProductFactory()
+        data = product.serialize()
+        data["available"] = "true"
+        self.assertRaises(DataValidationError, Product().deserialize, data)
+    
+    def test_deserialize_with_bad_data(self):
+        """It should return DataValidationError when deserialize a product from a bad data"""
+        product = ProductFactory()
+        data = product.serialize()
+        data["name"] = None
+        data["price"] = None
+        data["available"] = None
+        data["category"] = None
+        data["description"] = None
+        self.assertRaises(DataValidationError, Product().deserialize, data)
+
+    def test_deserialize_with_invalid_attribute(self):
+        """It should return DataValidationError when deserialize a product with invalid attribute"""
+        product = ProductFactory()
+        data = product.serialize()
+        data["category"] = "machines"
+        self.assertRaises(DataValidationError, Product().deserialize, data)
+
